@@ -6,11 +6,49 @@ import time
 import pytest
 
 
-@pytest.mark.skip
+class TestUserAddToBasketFromProductPage:
+    @pytest.fixture(scope="function", autouse=True)
+    def setup(self, browser):
+        """
+        1. +открыть страницу регистрации;
+        2. +зарегистрировать нового пользователя;
+        3. проверить, что пользователь залогинен.
+        """
+        link = 'https://selenium1py.pythonanywhere.com/en-gb/accounts/login/'
+        page = LoginPage(browser, link)
+        page.open()
+        email = str(time.time()) + "@fakemail.org"
+        password = str(time.time())
+        page.register_new_user(email, password)
+        page.should_be_authorized_user()
+        # time.sleep(90)
+
+    # @pytest.mark.skip
+    def test_user_can_add_product_to_basket(self, browser):
+        link = "https://selenium1py.pythonanywhere.com/en-gb/catalogue/coders-at-work_207/"
+        page = ProductPage(browser, link)
+        page.open()
+        page.add_product_to_basket()
+        page.should_be_message_equal_product_name()
+        page.should_be_message_equal_product_price()
+        # time.sleep(15)
+
+    # @pytest.mark.skip
+    def test_user_cant_see_success_message(self, browser):
+        """
+        1. Открываем страницу товара
+        2. Проверяем, что нет сообщения об успехе с помощью is_not_element_present
+        """
+        link = 'https://selenium1py.pythonanywhere.com/en-gb/catalogue/coders-at-work_207/'
+        page = ProductPage(browser, link)
+        page.open()
+        page.should_not_be_success_message()
+
+
 @pytest.mark.parametrize('link', [0, 1, 2, 3, 4, 5, 6,
                                   pytest.param("bugged_link", marks=pytest.mark.xfail),
                                   8, 9])
-def test_guest_can_add_product_to_basket(browser, link):
+def test_guest_can_add_product_to_basket(self, browser, link):
     link = f"http://selenium1py.pythonanywhere.com/catalogue/coders-at-work_207/?promo=offer{link}"
     page = ProductPage(browser, link)
     page.open()
@@ -21,7 +59,17 @@ def test_guest_can_add_product_to_basket(browser, link):
     # time.sleep(15)
 
 
-@pytest.mark.skip
+def test_guest_cant_see_success_message(self, browser):
+    """
+    1. Открываем страницу товара
+    2. Проверяем, что нет сообщения об успехе с помощью is_not_element_present
+    """
+    link = 'https://selenium1py.pythonanywhere.com/en-gb/catalogue/coders-at-work_207/'
+    page = ProductPage(browser, link)
+    page.open()
+    page.should_not_be_success_message()
+
+
 def test_guest_cant_see_success_message_after_adding_product_to_basket(browser):
     """
     1. Открываем страницу товара
@@ -35,19 +83,6 @@ def test_guest_cant_see_success_message_after_adding_product_to_basket(browser):
     page.should_not_be_success_message()
 
 
-@pytest.mark.skip
-def test_guest_cant_see_success_message(browser):
-    """
-    1. Открываем страницу товара
-    2. Проверяем, что нет сообщения об успехе с помощью is_not_element_present
-    """
-    link = 'https://selenium1py.pythonanywhere.com/en-gb/catalogue/coders-at-work_207/'
-    page = ProductPage(browser, link)
-    page.open()
-    page.should_not_be_success_message()
-
-
-@pytest.mark.skip
 def test_message_disappeared_after_adding_product_to_basket(browser):
     """
     1. Открываем страницу товара
@@ -91,3 +126,26 @@ def test_guest_cant_see_product_in_basket_opened_from_product_page(browser):
     # time.sleep(10)
     basket_page = BasketPage(browser, browser.current_url)
     basket_page.should_be_no_product_in_basket()
+
+
+# возможный вид варианта для API
+# @pytest.mark.login
+# class TestLoginFromProductPage():
+#     @pytest.fixture(scope="function", autouse=True)
+#     def setup(self):
+#         self. = ProductFactory(title="Best book created by robot")
+#         # создаем по апи
+#         self.link = self.product.link
+#         yield
+#         # после этого ключевого слова начинается teardown
+#         # выполнится после каждого теста в классе
+#         # удаляем те данные, которые мы создали
+#         self.product.delete()
+#
+#     def test_guest_can_go_to_login_page_from_product_page(self, browser):
+#         page = ProductPage(browser, self.link)
+#         # дальше обычная реализация теста
+#
+#     def test_guest_should_see_login_link(self, browser):
+#         page = ProductPage(browser, self.link)
+#         # дальше обычная реализация теста
