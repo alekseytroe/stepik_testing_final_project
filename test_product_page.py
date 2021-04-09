@@ -1,4 +1,5 @@
 # pytest -s test_product_page.py
+# pytest -v --tb=line --language=en -m need_review
 from .pages.login_page import LoginPage
 from .pages.product_page import ProductPage
 from .pages.basket_page import BasketPage
@@ -23,7 +24,7 @@ class TestUserAddToBasketFromProductPage:
         page.should_be_authorized_user()
         # time.sleep(90)
 
-    # @pytest.mark.skip
+    @pytest.mark.need_review
     def test_user_can_add_product_to_basket(self, browser):
         link = "https://selenium1py.pythonanywhere.com/en-gb/catalogue/coders-at-work_207/"
         page = ProductPage(browser, link)
@@ -33,7 +34,7 @@ class TestUserAddToBasketFromProductPage:
         page.should_be_message_equal_product_price()
         # time.sleep(15)
 
-    # @pytest.mark.skip
+    @pytest.mark.need_review
     def test_user_cant_see_success_message(self, browser):
         """
         1. Открываем страницу товара
@@ -45,6 +46,7 @@ class TestUserAddToBasketFromProductPage:
         page.should_not_be_success_message()
 
 
+@pytest.mark.need_review
 @pytest.mark.parametrize('link', [0, 1, 2, 3, 4, 5, 6,
                                   pytest.param("bugged_link", marks=pytest.mark.xfail),
                                   8, 9])
@@ -103,6 +105,7 @@ def test_guest_should_see_login_link_on_product_page(browser):
     page.should_be_login_link()
 
 
+@pytest.mark.need_review
 def test_guest_can_go_to_login_page_from_product_page(browser):
     link = "http://selenium1py.pythonanywhere.com/en-gb/catalogue/the-city-and-the-stars_95/"
     page = ProductPage(browser, link)
@@ -112,6 +115,7 @@ def test_guest_can_go_to_login_page_from_product_page(browser):
     login_page.should_be_login_page()
 
 
+@pytest.mark.need_review
 def test_guest_cant_see_product_in_basket_opened_from_product_page(browser):
     """"
     1. Гость открывает главную страницу
@@ -126,26 +130,3 @@ def test_guest_cant_see_product_in_basket_opened_from_product_page(browser):
     # time.sleep(10)
     basket_page = BasketPage(browser, browser.current_url)
     basket_page.should_be_no_product_in_basket()
-
-
-# возможный вид варианта для API
-# @pytest.mark.login
-# class TestLoginFromProductPage():
-#     @pytest.fixture(scope="function", autouse=True)
-#     def setup(self):
-#         self. = ProductFactory(title="Best book created by robot")
-#         # создаем по апи
-#         self.link = self.product.link
-#         yield
-#         # после этого ключевого слова начинается teardown
-#         # выполнится после каждого теста в классе
-#         # удаляем те данные, которые мы создали
-#         self.product.delete()
-#
-#     def test_guest_can_go_to_login_page_from_product_page(self, browser):
-#         page = ProductPage(browser, self.link)
-#         # дальше обычная реализация теста
-#
-#     def test_guest_should_see_login_link(self, browser):
-#         page = ProductPage(browser, self.link)
-#         # дальше обычная реализация теста

@@ -2,12 +2,8 @@
 from .pages.main_page import MainPage
 from .pages.login_page import LoginPage
 from .pages.basket_page import BasketPage
-from .pages.locators import ProductPageLocators
 import time
 import pytest
-
-
-# http://selenium1py.pythonanywhere.com/catalogue/the-shellcoders-handbook_209?promo=midsummer
 
 
 @pytest.mark.login_guest
@@ -36,13 +32,8 @@ def test_guest_cant_see_product_in_basket_opened_from_main_page(browser):
     4. Ожидаем, что есть текст о том что корзина пуста
     """
     link = "http://selenium1py.pythonanywhere.com/"
-    # link = 'https://selenium1py.pythonanywhere.com/ru/catalogue/the-shellcoders-handbook_209/'
     page = MainPage(browser, link)
     page.open()
-    # для проверки работы теста добавим товар в корзину, потом уберем этот код
-    # login_link = browser.find_element(*ProductPageLocators.BASKET_BTN)
-    # login_link.click()
-    #
     page.go_to_basket_page()
     # time.sleep(10)
     basket_page = BasketPage(browser, browser.current_url)
